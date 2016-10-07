@@ -1,0 +1,27 @@
+version: '2'
+
+services:
+  vp:
+    image: yeasy/hyperledger-peer:latest
+    expose:
+      - "7051"
+      - "7052"
+      - "7053"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - CORE_CHAINCODE_ID_NAME=mycc
+      - CORE_PEER_ADDRESSAUTODETECT=true
+      - CORE_PEER_NETWORKID=dev
+      - CORE_LOGGING_LEVEL=info  #critical, error, warning, notice, info, debug
+      - CORE_VM_ENDPOINT=unix:///var/run/docker.sock
+      - PROJECT_VERSION=0.7.0-snapshot-0e69b6d
+
+      # The following section enables pbft consensus
+      - CORE_PEER_VALIDATOR_CONSENSUS_PLUGIN=pbft  # noops, pbft
+      - CORE_PBFT_GENERAL_MODE=batch  # batch. classic and sieve will be not supported again.
+      - CORE_PBFT_GENERAL_N=4
+      - CORE_PBFT_GENERAL_BATCHSIZE=2  # only useful when in batch mode
+      - CORE_PBFT_GENERAL_TIMEOUT_REQUEST=2s
+    command: peer node start
+
